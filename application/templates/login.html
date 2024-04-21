@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Registration Form 5</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./static/css/login.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="social-icons">
+      <i class="fab fa-facebook-f"></i>
+      <i class="fab fa-twitter"></i>
+      <i class="fab fa-instagram"></i>
+    </div>
+
+    <form id="login" class="form" method="post">
+      <input type="text" class="input-filed" name="username" placeholder="Username">
+      <input type="password" class="input-filed" name="password" id="password-input" placeholder="Password">
+      {% if error %}
+        <span class="error">{{error}}</span>
+      {% else %}
+
+      {% endif %}
+      <label><input type="checkbox" class="password-checkbox" id="password-check"> Показать пароль</label>
+      
+      <button type="submit" class="submit-btn">Log in</button>
+    </form>
+  </div>
+  <script>
+    const inputPass = document.getElementById('password-input');
+    const checkPass = document.getElementById('password-check');
+
+    checkPass.addEventListener('click',() => {
+      if (inputPass.getAttribute('type') === "password"){
+        inputPass.setAttribute('type', 'text');
+      } else {
+        inputPass.setAttribute('type', 'password');
+      }
+    })
+  </script>
+</body>
+
+</html>

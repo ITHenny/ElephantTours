@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lagoona сеть отелей</title>
+  <link rel="stylesheet" href="./static/css/normalize.css">
+  <link rel="stylesheet" href="./static/css/style.css">
+</head>
+
+<body class="page">
+    <div class="container">
+        <div class="header-top">
+            <a class="all-links header-top-link header-top-link-one" href="/"><img class="img-header" src="./static/img/logo.png"
+                alt="Lagoona"></a>
+            <a class="all-links header-top-link header-top-link-two" href="tel:+74953225448">+7 495 322 54 48</a>
+            {% if username %}
+            <a class="all-links header-top-link header-top-link-three" href="{{ url_for('profile', username = username)}}">{{username}}</a>
+            {% else %}
+            <a class="all-links header-top-link header-top-link-three" href="/login">Личный кабинет</a>
+            {% endif %}
+        </div>
+    </div>
+    {% block maincontent %}{% endblock maincontent %}
+    <footer class="footer container">
+        <div class="all-footer">
+          <div class="footer-left">
+            <div class="footer-left-pars">
+              <p class="footer-pars">
+                © 2012-2020 Управляющая компания Объединенной сети «Лагуна Хотелс»
+              </p>
+              <p class="footer-pars">
+                Представленная на сайте информация носит справочный характер и не является публичной офертой
+              </p>
+            </div>
+            <a class="all-links f-link f-left-link" href="#">Пользовательское соглашение</a>
+          </div>
+          <div class="footer-center">
+            <address class="footer-address">11710, улица Юности, дом 5 строение 4, офис 2</address>
+            <div class="footer-phones">
+              <a class="all-links f-link" href="tel:+74995356434">+7 (499) 535-64-34</a>
+              <a class="all-links f-link" href="tel:+74950050544">+7 (495) 005-05-44</a>
+            </div>
+            <div class="footer-links">
+              <a class="all-links f-link" href="mailto:lg.oona@mail.ru">lg.oona@mail.ru</a>
+              <a class="all-links f-link" href="mailto:hotels.ln@mail.ru">hotels.ln@mail.ru</a>
+            </div>
+          </div>
+          <div class="footer-right">
+            <ul>
+              <li class="social-icon">
+                <a class="all-links social-links social-links-owl" href="#"></a>
+              </li>
+              <li class="social-icon">
+                <a class="all-links social-links social-links-twitter" href="#"></a>
+              </li>
+              <li class="social-icon">
+                <a class="all-links social-links social-links-facebook" href="#"></a>
+              </li>
+              <li class="social-icon">
+                <a class="all-links social-links social-links-vk" href="#"></a>
+              </li>
+              <li class="social-icon">
+                <a class="all-links social-links social-links-inst" href="#"></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </footer>
+    
+    </body>

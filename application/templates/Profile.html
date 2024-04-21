@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/normalize.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <title>Profile</title>
+</head>
+<body class="page">
+    <header class="header container">
+        <div class="header-top">
+            <a class="all-links header-top-link header-top-link-one" href="/"><img class="img-header" src="../static/img/logo.png"
+                alt="Lagoona"></a>
+            <a class="all-links header-top-link header-top-link-two" href="tel:+74953225448">+7 495 322 54 48</a>
+            <a class="all-links header-top-link header-top-link-three" href="/logout">Logout</a>
+        </div>
+        <h1 class="header container">Профиль</h1>
+        <h2 class="headings"> Данные пользователя </h2>
+        <ul class="header-bottom-unlist">
+            <li class="header-bottom-list">
+                <span>Имя пользователя: {{username}}</span>
+            </li>
+            <li class="header-bottom-list">
+                <span>Email: {{email}}</span>
+            </li>
+
+        </ul>
+    </header>
+    
+    <main class="main container">
+        <h2 class="headings">
+            История поездок
+        </h2>
+
+        <h2 class="headings">
+            Избранное
+        </h2>
+        <div class="base-body-div-content">
+            <h3>Туры</h3>
+            {% for tour in tours %}
+            <div class="container base-body-div-right">
+                <div class="container base-body-div-right-img">
+                    <img class="img-header" src="../static/img/logo.png"alt="Lagoona">
+                </div>
+
+                <div class="container base-body-div-right-text">
+                    <div>
+                        <h2>{{tour[1]}}</h2>
+                        <p>{{tour[2]}}</p>
+                        <h4>Цена: {{tour[7]}}</h4>
+                        <button class="all-btn header-btn"><a class="all-links header-top-link header-top-link-three" href="/tours/{{tour[0]}}">Подробнее</a></button>
+                        <form method="POST" class="like-form">
+                            <input class="like-input" type="text" name="form-name" value="like-form" />
+                            <input class="like-input" type="text" name="like-form" value={{tour[0]}} />
+                            <button type="submit" class="all-btn header-btn like-button">Убрать из избранного</button>
+                        </form>
+                    </div>
+
+                   
+                </div>
+            </div>
+            {%endfor%}
+            <h3>Отели</h3>
+                {% for hotel in hotels %}
+            <div class="container base-body-div-right">
+                <div class="container base-body-div-right-img">
+                    <img class="img-header" src="../static/img/logo.png"alt="Lagoona">
+                </div>
+
+                <div class="container base-body-div-right-text">
+                    <div>
+                        <h2>{{hotel[1]}}</h2>
+                        <p>Расположение: {{hotel[10]}}, {{hotel[9]}}, {{hotel[3]}}, {{hotel[4]}}</p>
+                        <h4>Цена: {{hotel[2]}}</h4>
+                        <button class="all-btn header-btn"><a class="all-links header-top-link header-top-link-three" href="/hotels/{{hotel[0]}}">Подробнее</a></button>
+                        <form method="POST" class="like-form">
+                            <input class="like-input" type="text" name="form-name" value="like-form-hotel" />
+                            <input class="like-input" type="text" name="like-form" value={{hotel[0]}} />
+                            <button type="submit" class="all-btn header-btn like-button">Убрать из избранного</button>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+            {%endfor%}
+        </div>
+    </main>
+</body>
+</html>

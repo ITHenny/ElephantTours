@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block maincontent %}
+
+<div class="container ">
+    <h1>Наши Отели</h1>
+    <div class="base-body-div">
+        <div class="container base-body-div-left">
+            <h3>Фильтры</h3>
+            <div id="filters">
+                <form id="filter" class="form" method="POST">
+                    <h4>Страны</h4>
+                    <div class="input-filed-form">
+                        <input type="checkbox" class="input-filed" name="Англия" value="Англия"><span class="input-filed-form-text">Англия</span>
+                    </div>
+                    <div class="input-filed-form">
+                        <input type="checkbox" class="input-filed" name="Италия" value="Италия"><span class="input-filed-form-text">Италия</span>
+                    </div>
+                    <div class="input-filed-form">
+                        <input type="checkbox" class="input-filed" name="Франция" value="Франция"><span class="input-filed-form-text">Франция</span>
+                    </div>
+                    <h4>Звезды</h4>
+                    <div class="input-filed-form">
+                        <input type="checkbox" class="input-filed" name="1" value="1"><span class="input-filed-form-text">1</span>
+                    </div>
+                    <div class="input-filed-form">
+                        <input type="checkbox" class="input-filed" name="2" value="2"><span class="input-filed-form-text">2</span>
+                    </div>
+                    <div class="input-filed-form">
+                        <input type="checkbox" class="input-filed" name="3" value="3"><span class="input-filed-form-text">3</span>
+                    </div>
+                    <div class="input-filed-form">
+                        <input type="checkbox" class="input-filed" name="4" value="4"><span class="input-filed-form-text">4</span>
+                    </div>
+                    <div class="input-filed-form">
+                        <input type="checkbox" class="input-filed" name="5" value="5"><span class="input-filed-form-text">5</span>
+                    </div>
+                    <button type="submit" class="submit-btn all-btn header-btn" value="Register" name="">Найти</button>
+                </form>
+            </div>
+        </div>
+        <div class="base-body-div-content">
+            {% for hotel in hotels %}
+            <div class="container base-body-div-right">
+                <div class="container base-body-div-right-img">
+                    <img class="img-header" src="./static/img/logo.png"alt="Lagoona">
+                </div>
+
+                <div class="container base-body-div-right-text">
+                    <div>
+                        <h2>{{hotel[1]}}</h2>
+                        <p>Расположение: {{hotel[10]}}, {{hotel[9]}}, {{hotel[3]}}, {{hotel[4]}}</p>
+                        <h4>Цена: {{hotel[2]}}</h4>
+                        <button class="all-btn header-btn"><a class="all-links header-top-link header-top-link-three" href="/tours/{{hotel[0]}}">Подробнее</a></button>
+                        <form method="POST" class="like-form">
+                            <input class="like-input" type="text" name="form-name" value="like-form" />
+                            <input class="like-input" type="text" name="like-form" value={{hotel[0]}} />
+                            <button type="submit" class="all-btn header-btn like-button">В избранное</button>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+            {%endfor%}
+        </div>
+    </div>
+</div>
+{% endblock maincontent %}
