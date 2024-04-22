@@ -31,6 +31,10 @@ def login():
         # Fetch one record and return result
         account = cursor.fetchone()
 
+        if int(account["role_id"]) != 3:
+            flash("Incorrect username/password")
+            return render_template("login.html", error="Неверный логин или пароль")
+
         if account and check_password_hash(account["password"], password):
             password_rs = account["password"]
             # If account exists in users table in out database
@@ -186,10 +190,42 @@ def tourPage(id):
     tour = Tour.getTourByID(id)
     return render_template("tourpage.html", tour=tour, username=session["username"])
 
-@app.route("/agent")
-def agent():
-    pass
 
-@app.route("/agent/form")
-def agent():
-    pass
+@app.route("/agentLogin")
+def agentLogin():
+    cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    if (
+            request.method == "POST"
+            and "username" in request.form
+            and "password" in request.form
+    ):
+        username = request.form["username"]
+        password = request.form["password"]
+
+        # Check if account exists using MySQL
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        # Fetch one record and return result
+        account = cursor.fetchone()
+        if int(account["role_id"]) != 2:
+            flash("Incorrect username/password")
+            return render_template("agentLogin.html", error="Неверный логин или пароль")
+
+        if account and check_password_hash(account["password"], password):
+            password_rs = account["password"]
+            # If account exists in users table in out database
+            # Create session data, we can access this data in other routes
+            session["loggedin"] = True
+            session["id"] = account["id_user"]
+            session["username"] = account["username"]
+            # Redirect to home page
+            return redirect("/agent", code=HTTPStatus.FOUND)
+        else:
+            # Account doesnt exist or username/password incorrect
+            flash("Incorrect username/password")
+            return render_template("agentLogin.html", error="Неверный логин или пароль")
+    return render_template("agentLogin.html", code=HTTPStatus.OK)
+
+
+@app.route("/agent")
+def agentPage():
+    return render_template("index.html", code=HTTPStatus.OK)
