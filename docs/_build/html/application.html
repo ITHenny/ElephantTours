@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html lang="ru" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>application package &#8212; документация ElephantTours 1</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=47a0e12c"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/translations.js?v=29b1f277"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="next" title="run module" href="run.html" />
+    <link rel="prev" title="ElephantTours" href="modules.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="application-package">
+<h1>application package<a class="headerlink" href="#application-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-application.config">
+<span id="application-config-module"></span><h2>application.config module<a class="headerlink" href="#module-application.config" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-application.models">
+<span id="application-models-module"></span><h2>application.models module<a class="headerlink" href="#module-application.models" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="mailto:!&#37;&#52;&#48;file">!<span>&#64;</span>file</a>
+&#64;brief Example Python program with Doxygen style comments.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="application.models.Hotel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">application.models.</span></span><span class="sig-name descname"><span class="pre">Hotel</span></span><a class="reference internal" href="_modules/application/models.html#Hotel"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.Hotel" title="Link to this definition">¶</a></dt>
+<dd><p>Базовые классы: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>! Класс отеля</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="application.models.Hotel.createQuery">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">createQuery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sql</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#Hotel.createQuery"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.Hotel.createQuery" title="Link to this definition">¶</a></dt>
+<dd><p>Метод формирует SQL запрос основываясь на списке фильтров
+:param sql: список частей SQL запроса
+:return: список отелей</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="application.models.Hotel.deleteLoveHotel">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deleteLoveHotel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hotel_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#Hotel.deleteLoveHotel"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.Hotel.deleteLoveHotel" title="Link to this definition">¶</a></dt>
+<dd><p>Метод убирает отель из избранного
+:param tour_id: ID отеля
+:param user_id: ID пользователя
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="application.models.Hotel.getHotelsbyFilters">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getHotelsbyFilters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#Hotel.getHotelsbyFilters"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.Hotel.getHotelsbyFilters" title="Link to this definition">¶</a></dt>
+<dd><p>Метод врзващает список отелей основываясь на фильтрах, выбранных пользователем
+:param request: Форма с фильтрами
+:return: Список отелей</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="application.models.Hotel.insertLoveHotel">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">insertLoveHotel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hotel_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#Hotel.insertLoveHotel"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.Hotel.insertLoveHotel" title="Link to this definition">¶</a></dt>
+<dd><p>Метод доавляет отель в избранное
+:param tour_id: ID отеля
+:param user_id: ID пользователя
+:return: None</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="application.models.Tour">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">application.models.</span></span><span class="sig-name descname"><span class="pre">Tour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tourName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imgMeta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">price</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hotelName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">street</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">house</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stars</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#Tour"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.Tour" title="Link to this definition">¶</a></dt>
+<dd><p>Базовые классы: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>! Класс тура</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="application.models.Tour.createQuery">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">createQuery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sql</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#Tour.createQuery"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.Tour.createQuery" title="Link to this definition">¶</a></dt>
+<dd><p>Метод формирует SQL запрос основываясь на списке фильтров
+:param sql: список частей SQL запроса
+:return: список туров</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="application.models.Tour.deleteLoveTour">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deleteLoveTour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tour_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#Tour.deleteLoveTour"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.Tour.deleteLoveTour" title="Link to this definition">¶</a></dt>
+<dd><p>Метод убирает тур из избранного
+:param tour_id: ID тура
+:param user_id: ID пользователя
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="application.models.Tour.getTourByID">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getTourByID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#Tour.getTourByID"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.Tour.getTourByID" title="Link to this definition">¶</a></dt>
+<dd><p>Метод возвращает тур по ID
+:param id: id тура
+:return: Объект класса Tour</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="application.models.Tour.getToursByFilters">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getToursByFilters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#Tour.getToursByFilters"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.Tour.getToursByFilters" title="Link to this definition">¶</a></dt>
+<dd><p>Метод врзващает список туров основываясь на фильтрах, выбранных пользователем
+:param request: Форма с фильтрами
+:return: Список туров</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="application.models.Tour.insertLoveTour">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">insertLoveTour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tour_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#Tour.insertLoveTour"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.Tour.insertLoveTour" title="Link to this definition">¶</a></dt>
+<dd><p>Метод доавляет тур в избранное
+:param tour_id: ID тура
+:param user_id: ID пользователя
+:return: None</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="application.models.User">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">application.models.</span></span><span class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#User"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.User" title="Link to this definition">¶</a></dt>
+<dd><p>Базовые классы: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>! Класс пользователя</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="application.models.User.cursor">
+<span class="sig-name descname"><span class="pre">cursor</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;cursor</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x000001843A0609B0;</span> <span class="pre">closed:</span> <span class="pre">0&gt;</span></em><a class="headerlink" href="#application.models.User.cursor" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="application.models.User.insertUser">
+<span class="sig-name descname"><span class="pre">insertUser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#User.insertUser"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.User.insertUser" title="Link to this definition">¶</a></dt>
+<dd><p>Метод добавляет пользователя в таблицу users
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="application.models.User.isValid">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">isValid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/models.html#User.isValid"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.models.User.isValid" title="Link to this definition">¶</a></dt>
+<dd><p>Метод проверяет введенные пользователем данные при регистрации на валидность</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – Имя пользователя</p></li>
+<li><p><strong>email</strong> – Почта пользователя</p></li>
+<li><p><strong>password</strong> – Пароль пользователя</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>True или Fasle</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-application.views">
+<span id="application-views-module"></span><h2>application.views module<a class="headerlink" href="#module-application.views" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="application.views.agentLogin">
+<span class="sig-prename descclassname"><span class="pre">application.views.</span></span><span class="sig-name descname"><span class="pre">agentLogin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/views.html#agentLogin"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.views.agentLogin" title="Link to this definition">¶</a></dt>
+<dd><p>Функция проверяет введенные пользователем «тур-агент» данные при входе в систему, создает сессию пользователя и отображает страницу по адресу «/agentLogin»
+:return: HTML страница</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="application.views.agentPage">
+<span class="sig-prename descclassname"><span class="pre">application.views.</span></span><span class="sig-name descname"><span class="pre">agentPage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/views.html#agentPage"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.views.agentPage" title="Link to this definition">¶</a></dt>
+<dd><p>Функция отображает страницу тур-агента
+:return: HTML страница</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="application.views.hello">
+<span class="sig-prename descclassname"><span class="pre">application.views.</span></span><span class="sig-name descname"><span class="pre">hello</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/views.html#hello"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.views.hello" title="Link to this definition">¶</a></dt>
+<dd><p>Функция отображает страницу по адресу «/»
+:return: HTML страница и сессия пользователя, если тот вошел в систему</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="application.views.hotels">
+<span class="sig-prename descclassname"><span class="pre">application.views.</span></span><span class="sig-name descname"><span class="pre">hotels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/views.html#hotels"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.views.hotels" title="Link to this definition">¶</a></dt>
+<dd><p>Функция отображает страницу отелей и обрабатывает POST запросы с фильтрами по адресу «/hotels»
+:return: HTML страница</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="application.views.login">
+<span class="sig-prename descclassname"><span class="pre">application.views.</span></span><span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/views.html#login"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.views.login" title="Link to this definition">¶</a></dt>
+<dd><p>Функция проверяет введенные пользователем данные при входе в систему, создает сессию пользователя и отображает страницу по адресу «/login»
+:return: HTML страница</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="application.views.logout">
+<span class="sig-prename descclassname"><span class="pre">application.views.</span></span><span class="sig-name descname"><span class="pre">logout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/views.html#logout"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.views.logout" title="Link to this definition">¶</a></dt>
+<dd><p>Функция прекращает сессию пользователя
+:return: Перенаправляет на страницу с адресом «/»</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="application.views.profile">
+<span class="sig-prename descclassname"><span class="pre">application.views.</span></span><span class="sig-name descname"><span class="pre">profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/views.html#profile"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.views.profile" title="Link to this definition">¶</a></dt>
+<dd><p>Функция отображает профиль пользователя по адресу «/profile/&lt;username&gt;»
+:param username: имя пользователя
+:return: HTML страница</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="application.views.register">
+<span class="sig-prename descclassname"><span class="pre">application.views.</span></span><span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/views.html#register"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.views.register" title="Link to this definition">¶</a></dt>
+<dd><p>Функция проверяет введенные данные при регистрации, добавляет пользователя в таблицу users и отображает страницу по адресу «/register»
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="application.views.tourPage">
+<span class="sig-prename descclassname"><span class="pre">application.views.</span></span><span class="sig-name descname"><span class="pre">tourPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/views.html#tourPage"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.views.tourPage" title="Link to this definition">¶</a></dt>
+<dd><p>Функция отображает конкретный тур, основываясь на его ID по адресу «/tours/&lt;int:id&gt;»
+:param id: ID тура
+:return: HTML страница</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="application.views.tours">
+<span class="sig-prename descclassname"><span class="pre">application.views.</span></span><span class="sig-name descname"><span class="pre">tours</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/application/views.html#tours"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#application.views.tours" title="Link to this definition">¶</a></dt>
+<dd><p>Функция отображает страницу туров и обрабатывает POST запросы с фильтрами по адресу «/tours»
+:return: HTML страница</p>
+</dd></dl>
+
+</section>
+<section id="module-application">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-application" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ElephantTours</a></h1>
+
+
+
+
+
+
+
+
+<h3>Навигация</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ElephantTours</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">application package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="run.html">run module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">ElephantTours</a><ul>
+      <li>Previous: <a href="modules.html" title="предыдущая глава">ElephantTours</a></li>
+      <li>Next: <a href="run.html" title="следующая глава">run module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Быстрый поиск</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Искать" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Alexandr Blinov.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/application.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

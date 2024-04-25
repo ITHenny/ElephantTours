@@ -8,6 +8,10 @@ from http import HTTPStatus
 
 @app.route("/")
 def hello():
+    """
+    Функция отображает страницу по адресу "/"
+    :return: HTML страница и сессия пользователя, если тот вошел в систему
+    """
     if "loggedin" in session:
         # User is loggedin show them the home page
         return render_template("index.html", username=session["username"])
@@ -17,6 +21,10 @@ def hello():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    """
+    Функция проверяет введенные пользователем данные при входе в систему, создает сессию пользователя и отображает страницу по адресу "/login"
+    :return: HTML страница
+    """
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if (
             request.method == "POST"
@@ -53,6 +61,11 @@ def login():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    """
+    Функция проверяет введенные данные при регистрации, добавляет пользователя в таблицу users и отображает страницу по адресу "/register"
+    :return:
+    """
+    #todo: переделать регистрацию
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if (
             request.method == "POST"
@@ -80,6 +93,10 @@ def register():
 
 @app.route("/logout")
 def logout():
+    """
+    Функция прекращает сессию пользователя
+    :return: Перенаправляет на страницу с адресом "/"
+    """
     # Remove session data, this will log the user out
     session.pop("loggedin", None)
     session.pop("id", None)
@@ -91,6 +108,11 @@ def logout():
 
 @app.route("/profile/<username>", methods=["GET", "POST"])
 def profile(username):
+    """
+    Функция отображает профиль пользователя по адресу "/profile/<username>"
+    :param username: имя пользователя
+    :return: HTML страница
+    """
     if request.method == "POST" and request.form["form-name"] == "like-form":
         Tour.deleteLoveTour(request.form["like-form"], session["id"])
         return redirect(f"/profile/{session['username']}", code=HTTPStatus.FOUND)
@@ -120,6 +142,10 @@ def profile(username):
 
 @app.route("/tours", methods=["GET", "POST"])
 def tours():
+    """
+    Функция отображает страницу туров и обрабатывает POST запросы с фильтрами по адресу "/tours"
+    :return: HTML страница
+    """
     # Обрабоика отправленной формы фильтров
     if request.method == "POST":
         if request.form["form-name"] == "like-form":
@@ -154,6 +180,10 @@ def tours():
 
 @app.route("/hotels", methods=["GET", "POST"])
 def hotels():
+    """
+    Функция отображает страницу отелей и обрабатывает POST запросы с фильтрами по адресу "/hotels"
+    :return: HTML страница
+    """
     if request.method == "POST":
 
         if request.form["form-name"] == "like-form":
@@ -187,12 +217,21 @@ def hotels():
 
 @app.route("/tours/<int:id>")
 def tourPage(id):
+    """
+    Функция отображает конкретный тур, основываясь на его ID по адресу "/tours/<int:id>"
+    :param id: ID тура
+    :return: HTML страница
+    """
     tour = Tour.getTourByID(id)
     return render_template("tourpage.html", tour=tour, username=session["username"])
 
 
 @app.route("/agentLogin")
 def agentLogin():
+    """
+    Функция проверяет введенные пользователем "тур-агент" данные при входе в систему, создает сессию пользователя и отображает страницу по адресу "/agentLogin"
+    :return: HTML страница
+    """
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if (
             request.method == "POST"
@@ -228,4 +267,23 @@ def agentLogin():
 
 @app.route("/agent")
 def agentPage():
+    """
+    Функция отображает страницу тур-агента
+    :return: HTML страница
+    """
     return render_template("index.html", code=HTTPStatus.OK)
+
+
+#todo: create self tour maker
+
+#todo: create usercard getter for tour agent
+
+#todo: create tour edit form for tour agent
+
+#todo: create tour maker for tour agent
+
+#todo: create places page
+
+#todo: tours img
+
+#todo: add service func

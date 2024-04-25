@@ -825,6 +825,10 @@ html {
   height: 1px;
 }
 
+.img-tour{
+  border-radius: 10px;
+}
+
 /* Footer */
 
 .all-footer {
