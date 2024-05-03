@@ -8,7 +8,7 @@ app.secret_key = config.SECRET_KEY
 
 pg = psycopg2.connect(
     host="localhost",
-    dbname="test",
+    dbname="ElephantTours",
     user="postgres",
     password=config.SQL_PASSWORD,
     port=5432,

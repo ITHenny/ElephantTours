@@ -829,6 +829,29 @@ html {
   border-radius: 10px;
 }
 
+/* Review */
+
+.review-block{
+    width: 100%;
+    display: inline-block;
+}
+
+.review-form{
+    display: inline-block;
+    width: 100%;
+}
+
+.review-text{
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.review-user{
+    background-color: white;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
 /* Footer */
 
 .all-footer {

@@ -2,7 +2,7 @@ from application.__init__ import app, pg
 import psycopg2.extras
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from application.models import User, Tour, Hotel
+from application.models import User, Tour, Hotel, Review
 from http import HTTPStatus
 
 
@@ -39,7 +39,7 @@ def login():
         # Fetch one record and return result
         account = cursor.fetchone()
 
-        if int(account["role_id"]) != 3:
+        if int(account["roles_idroles"]) != 8:
             flash("Incorrect username/password")
             return render_template("login.html", error="Неверный логин или пароль")
 
@@ -48,7 +48,7 @@ def login():
             # If account exists in users table in out database
             # Create session data, we can access this data in other routes
             session["loggedin"] = True
-            session["id"] = account["id_user"]
+            session["id"] = account["idusers"]
             session["username"] = account["username"]
             # Redirect to home page
             return redirect("/", code=HTTPStatus.FOUND)
@@ -65,23 +65,33 @@ def register():
     Функция проверяет введенные данные при регистрации, добавляет пользователя в таблицу users и отображает страницу по адресу "/register"
     :return:
     """
-    #todo: переделать регистрацию
+    # todo: переделать регистрацию
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if (
             request.method == "POST"
             and "username" in request.form
             and "password" in request.form
             and "email" in request.form
+            and "name" in request.form
+            and "secondName" in request.form
+            and "passport" in request.form
+            and "kem" in request.form
+            and "date" in request.form
     ):
         username = request.form["username"]
         email = request.form["email"]
         password = request.form["password"]
         _hashed_password = generate_password_hash(password)
+        name = request.form["name"]
+        secondName = request.form["secondName"]
+        passport = request.form["passport"]
+        kem = request.form["kem"]
+        date = request.form["date"]
 
-        if not User.isValid(username, email, password):
+        if not User.isValid(username, email, password, passport, date):
             flash("Invalid Data")
 
-        user = User(username, email, _hashed_password)
+        user = User(username, _hashed_password, name, secondName, email, passport, date, kem)
         user.insertUser()
 
         return redirect("/", code=HTTPStatus.FOUND)
@@ -126,12 +136,12 @@ def profile(username):
     cursor.execute("SELECT email FROM users WHERE username = %s", (username,))
     email = cursor.fetchone()
     cursor.execute(
-        "select * from tours JOIN tours_has_users ON tours.id_tour = tours_has_users.tour_id WHERE user_id=%s;",
+        "select * from tours JOIN tours_has_users ON tours.idtours = tours_has_users.tours_idtours WHERE users_idusers=%s;",
         (session["id"],),
     )
     tours = cursor.fetchall()
     cursor.execute(
-        "select * from hotels JOIN hotels_has_users ON hotels.id_hotel = hotels_has_users.hotel_id WHERE user_id=%s;",
+        "select * from hotels JOIN hotels_has_users ON hotels.idhotels = hotels_has_users.hotels_idhotels WHERE users_idusers=%s;",
         (session["id"],),
     )
     hotels = cursor.fetchall()
@@ -148,6 +158,7 @@ def tours():
     """
     # Обрабоика отправленной формы фильтров
     if request.method == "POST":
+
         if request.form["form-name"] == "like-form":
             if not "loggedin" in session:
                 return redirect("/login", code=HTTPStatus.FOUND)
@@ -205,7 +216,7 @@ def hotels():
 
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(
-        "SELECT * FROM hotels JOIN cities ON hotels.city_id = cities.id_city"
+        "SELECT * FROM hotels JOIN cities ON hotels.cities_idcities = cities.idcities"
     )
     hotels = cursor.fetchall()
     if "loggedin" in session:
@@ -215,15 +226,25 @@ def hotels():
     return render_template("hotels.html", username=username, hotels=hotels)
 
 
-@app.route("/tours/<int:id>")
+@app.route("/tours/<int:id>", methods=["GET", "POST"])
 def tourPage(id):
     """
     Функция отображает конкретный тур, основываясь на его ID по адресу "/tours/<int:id>"
     :param id: ID тура
     :return: HTML страница
     """
+
+    if request.method == "POST":
+        if request.form["form-name"] == "review-form":
+            review = Review(session['id'], request.form["review"], id)
+            review.createReview()
+
     tour = Tour.getTourByID(id)
-    return render_template("tourpage.html", tour=tour, username=session["username"])
+    cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute(
+        f"SELECT users.username, reviews.reviw FROM reviews JOIN tours_has_reviews ON (reviews.idreview = tours_has_reviews.reviews_idreview) JOIN users ON (reviews.users_idusers = users.idusers) WHERE tours_idtours = {id}")
+    reviews = cursor.fetchall()
+    return render_template("tourpage.html", tour=tour, username=session["username"], reviews=reviews)
 
 
 @app.route("/agentLogin")
@@ -273,17 +294,16 @@ def agentPage():
     """
     return render_template("index.html", code=HTTPStatus.OK)
 
+# todo: create self tour maker
 
-#todo: create self tour maker
+# todo: create usercard getter for tour agent
 
-#todo: create usercard getter for tour agent
+# todo: create tour edit form for tour agent
 
-#todo: create tour edit form for tour agent
+# todo: create tour maker for tour agent
 
-#todo: create tour maker for tour agent
+# todo: create places page
 
-#todo: create places page
+# todo: tours img
 
-#todo: tours img
-
-#todo: add service func
+# todo: add service func

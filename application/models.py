@@ -6,6 +6,7 @@ from application.__init__ import pg
 import psycopg2.extras
 from flask import flash
 import re
+from datetime import date, datetime
 
 
 class User:
@@ -14,7 +15,7 @@ class User:
     """
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    def __init__(self, username, email, password):
+    def __init__(self, username, password, firstname, secondname, email, passport, date, whoissued, role=8):
         """
         Метод инициализирует объект класса User
 
@@ -26,9 +27,15 @@ class User:
         self.username = username
         self.email = email
         self.password = password
+        self.firstname = firstname
+        self.secondname = secondname
+        self.passport = passport
+        self.date = date
+        self.whoissued = whoissued
+        self.role = role
 
     @staticmethod
-    def isValid(username, email, password):
+    def isValid(username, email, password, passport, dateVid):
         """
         Метод проверяет введенные пользователем данные при регистрации на валидность
 
@@ -41,11 +48,18 @@ class User:
         cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         account = cursor.fetchone()
+        format = "%Y-%m-%d"
+
+        print(dateVid, type(dateVid))
         if account:
             return False
         elif not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             return False
         elif not re.match(r"[A-Za-z0-9]+", username):
+            return False
+        elif not len(passport) == 10:
+            return False
+        elif not datetime.strptime(dateVid, format) < datetime.today():
             return False
         elif not username or not password or not email:
             return False
@@ -59,8 +73,9 @@ class User:
         """
         cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(
-            "INSERT INTO users (username, email, password, role_id) VALUES (%s,%s,%s, 3)",
-            (self.username, self.email, self.password),
+            "INSERT INTO users (username, password, firstname, secondname, email, passport, date, whoissued, roles_idroles) VALUES (%s,%s,%s, %s, %s,%s,%s, %s, %s)",
+            (self.username, self.password, self.firstname, self.secondname, self.email, self.passport, self.date,
+             self.whoissued, self.role),
         )
         pg.commit()
         flash("You have successfully registered!")
@@ -70,19 +85,21 @@ class Tour:
     """
     ! Класс тура
     """
+
     def __init__(
-        self,
-        id,
-        tourName,
-        description,
-        imgMeta,
-        price,
-        hotelName,
-        street,
-        house,
-        city,
-        country,
-        stars,
+            self,
+            id,
+            tourName,
+            description,
+            imgMeta,
+            price,
+            hotelName,
+            street,
+            house,
+            city,
+            country,
+            stars,
+            longdesc,
     ):
         """
         Метод инициализирует объект класса Tour
@@ -111,6 +128,7 @@ class Tour:
             "country": country,
         }
         self.stars = stars
+        self.longdesc = longdesc
 
     @staticmethod
     def getToursByFilters(request):
@@ -163,7 +181,7 @@ class Tour:
         :return: Объект класса Tour
         """
         cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        sql = f"SELECT * FROM tours JOIN hotels ON (tours.hotel_id = hotels.id_hotel) JOIN cities ON (hotels.city_id = cities.id_city)  WHERE id_tour = {id}"
+        sql = f"SELECT * FROM tours JOIN hotels ON (tours.hotels_idhotels = hotels.idhotels) JOIN cities ON (hotels.cities_idcities = cities.idcities)  WHERE idtours = {id}"
         cursor.execute(sql)
         sql = cursor.fetchall()
         sql = sql[0]
@@ -171,14 +189,15 @@ class Tour:
             id=sql[0],
             tourName=sql[1],
             description=sql[2],
-            imgMeta=sql[6],
-            price=sql[7],
-            hotelName=sql[9],
-            street=sql[11],
-            house=sql[12],
-            city=sql[17],
-            country=sql[18],
-            stars=sql[14],
+            imgMeta=sql[7],
+            price=sql[3],
+            hotelName=sql[10],
+            street=sql[12],
+            house=sql[13],
+            city=sql[18],
+            country=sql[19],
+            stars=sql[15],
+            longdesc=sql[8]
         )
         return tour
 
@@ -192,12 +211,12 @@ class Tour:
         """
         cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(
-            f"SELECT * from tours_has_users WHERE user_id={user_id} AND tour_id={tour_id}"
+            f"SELECT * from tours_has_users WHERE users_idusers={user_id} AND tours_idtours={tour_id}"
         )
         sql = cursor.fetchall()
         if len(sql) == 0:
             cursor.execute(
-                "INSERT INTO tours_has_users (tour_id, user_id) VALUES (%s,%s)",
+                "INSERT INTO tours_has_users (tours_idtours, users_idusers) VALUES (%s,%s)",
                 (tour_id, user_id),
             )
             pg.commit()
@@ -213,7 +232,7 @@ class Tour:
         """
         cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(
-            "DELETE FROM tours_has_users WHERE tour_id=%s AND user_id=%s",
+            "DELETE FROM tours_has_users WHERE tours_idtours=%s AND users_idusers=%s",
             (tour_id, user_id),
         )
         pg.commit()
@@ -224,6 +243,7 @@ class Hotel:
     """
     ! Класс отеля
     """
+
     @staticmethod
     def getHotelsbyFilters(request):
         """
@@ -264,17 +284,17 @@ class Hotel:
         """
         if len(sql) > 1:
             str_sql = (
-                "SELECT * FROM hotels JOIN cities ON (hotels.city_id = cities.id_city) WHERE "
-                + "AND".join(sql)
+                    "SELECT * FROM hotels JOIN cities ON (hotels.cities_idcities = cities.idcities) WHERE "
+                    + "AND".join(sql)
             )
         elif len(sql) == 1:
             str_sql = (
-                "SELECT * FROM hotels JOIN cities ON (hotels.city_id = cities.id_city) WHERE "
-                + sql[0]
+                    "SELECT * FROM hotels JOIN cities ON (hotels.cities_idcities = cities.idcities) WHERE "
+                    + sql[0]
             )
         else:
             str_sql = (
-                "SELECT * FROM hotels JOIN cities ON (hotels.city_id = cities.id_city)"
+                "SELECT * FROM hotels JOIN cities ON (hotels.cities_idcities = cities.idcities)"
             )
         cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(str_sql)
@@ -291,7 +311,7 @@ class Hotel:
         """
         cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(
-            "DELETE FROM hotels_has_users WHERE hotel_id=%s AND user_id=%s",
+            "DELETE FROM hotels_has_users WHERE hotels_idhotels=%s AND users_idusers=%s",
             (hotel_id, user_id),
         )
         pg.commit()
@@ -307,13 +327,30 @@ class Hotel:
         """
         cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(
-            f"SELECT * from hotels_has_users WHERE user_id={user_id} AND hotel_id={hotel_id}"
+            f"SELECT * from hotels_has_users WHERE users_idusers={user_id} AND hotels_idhotels={hotel_id}"
         )
         sql = cursor.fetchall()
         if len(sql) == 0:
             cursor.execute(
-                "INSERT INTO hotels_has_users (hotel_id, user_id) VALUES (%s,%s)",
+                "INSERT INTO hotels_has_users (hotels_idhotels, users_idusers) VALUES (%s,%s)",
                 (hotel_id, user_id),
             )
             pg.commit()
             flash("Liked!")
+
+
+class Review:
+    def __init__(self, userid, text, tourid):
+        self.userid = userid
+        self.text = text
+        self.tourid = tourid
+
+    def createReview(self):
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("INSERT INTO reviews (reviw, users_idusers) VALUES (%s, %s)", (self.text, self.userid))
+        cursor.execute(f"SELECT idreview FROM reviews WHERE users_idusers = {self.userid}")
+        reviewid = cursor.fetchall()
+        reviewid = reviewid[-1]
+        cursor.execute(f"INSERT INTO tours_has_reviews (tours_idtours, reviews_idreview) VALUES ({self.tourid}, {reviewid[0]})")
+        pg.commit()
+

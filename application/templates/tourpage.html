@@ -10,7 +10,7 @@
 <body class="page">
     <header class="header container">
         <div class="header-top">
-          <a class="all-links header-top-link header-top-link-one" href="/"><img class="img-header" src="../static/img/rome.jpg"
+          <a class="all-links header-top-link header-top-link-one" href="/"><img class="img-header" src="../static/img/logo.png"
               alt="Lagoona"></a>
           <a class="all-links header-top-link header-top-link-two" href="tel:+74953225448">+7 495 322 54 48</a>
           {% if username %}
@@ -24,8 +24,8 @@
     <main class="main container">
         <div class="container">
             <h1>{{ tour.tourName }}</h1>
-            <img src="{{ tour.imgMeta }}" alt="{{ tour.tourName }}" width="100%">
-            <p>{{ tour.description }}</p>
+            <img src=../static/img/rome.jpg alt="{{ tour.tourName }}" width="100%" class="img-tour-page">
+            <p>{{ tour.longdesc }}</p>
             <h2>Hotel Details:</h2>
             <p><strong>Name:</strong> {{ tour.hotelName }}</p>
             <p class="hotel-address"><strong>Address:</strong> {{ tour.address.street }}, {{ tour.address.house }}, {{ tour.address.city }}, {{ tour.address.country }}</p>
@@ -39,6 +39,28 @@
                 <input class="input-filed-form-text " type="date" name="end_date" id="end_date" required>
                 <button class="submit-btn all-btn header-btn" type="submit">Order Now</button>
             </form>
+
+            <div class="review-block">
+                <h3>Оставьте отзыв</h3>
+                <form class="form review-form" method="post">
+                    <input class="like-input" type="text" name="form-name" value="review-form">
+                    <textarea class="review-text" type="text" name="review" placeholder="Напишите отзыв"></textarea>
+                    <button class="submit-btn all-btn header-btn" type="submit">Отправить</button>
+                </form>
+            </div>
+
+            <div>
+                <h3>Отзывы</h3>
+                {% for review in reviews %}
+                <div class="review-user">
+                    <h3>Пользователь: </h3><p>{{review[0]}}</p>
+                    <h3>Отзыв:</h3>
+                    <p>{{review[1]}}</p>
+                </div>
+
+                {%endfor%}
+            </div>
+
         </div>
 
     </main>
