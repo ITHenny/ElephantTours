@@ -1,4 +1,4 @@
-from application.__init__ import app, pg
+from application.__init__ import app, pg, imgFolder
 import psycopg2.extras
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -315,8 +315,6 @@ def agentPage():
     return render_template("agentPage.html", code=HTTPStatus.OK)
 
 # todo: create self tour maker
-
-# todo: create usercard getter for tour agent
 
 # todo: create tour edit form for tour agent
 
