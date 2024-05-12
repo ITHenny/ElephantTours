@@ -247,7 +247,7 @@ def tourPage(id):
     return render_template("tourpage.html", tour=tour, username=session["username"], reviews=reviews)
 
 
-@app.route("/agentLogin")
+@app.route("/agentLogin", methods=["GET", "POST"])
 def agentLogin():
     """
     Функция проверяет введенные пользователем "тур-агент" данные при входе в систему, создает сессию пользователя и отображает страницу по адресу "/agentLogin"
@@ -266,16 +266,16 @@ def agentLogin():
         cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         # Fetch one record and return result
         account = cursor.fetchone()
-        if int(account["role_id"]) != 2:
+        if int(account["roles_idroles"]) != 7:
             flash("Incorrect username/password")
             return render_template("agentLogin.html", error="Неверный логин или пароль")
 
-        if account and check_password_hash(account["password"], password):
+        if account and account["password"] == password:
             password_rs = account["password"]
             # If account exists in users table in out database
             # Create session data, we can access this data in other routes
             session["loggedin"] = True
-            session["id"] = account["id_user"]
+            session["id"] = account["idusers"]
             session["username"] = account["username"]
             # Redirect to home page
             return redirect("/agent", code=HTTPStatus.FOUND)
@@ -286,13 +286,33 @@ def agentLogin():
     return render_template("agentLogin.html", code=HTTPStatus.OK)
 
 
-@app.route("/agent")
+@app.route("/agent", methods=["GET", "POST"])
 def agentPage():
     """
     Функция отображает страницу тур-агента
     :return: HTML страница
     """
-    return render_template("index.html", code=HTTPStatus.OK)
+    cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    if request.method == "POST":
+        if request.form["form-name"] == "getUser-form":
+            cursor.execute("SELECT * FROM users WHERE username = %s", (request.form["userName"],))
+            # Fetch one record and return result
+            account = cursor.fetchone()
+            if not account:
+                render_template("agentPage.html", code=HTTPStatus.OK)
+            cursor.execute(
+                "select * from tours JOIN tours_has_users ON tours.idtours = tours_has_users.tours_idtours WHERE users_idusers=%s;",
+                (account[0],),
+            )
+            tours = cursor.fetchall()
+            cursor.execute(
+                "select * from hotels JOIN hotels_has_users ON hotels.idhotels = hotels_has_users.hotels_idhotels WHERE users_idusers=%s;",
+                (account[0],),
+            )
+            hotels = cursor.fetchall()
+
+            return render_template("userCard.html", code=HTTPStatus.FOUND, user=account, tours=tours, hotels=hotels)
+    return render_template("agentPage.html", code=HTTPStatus.OK)
 
 # todo: create self tour maker
 
