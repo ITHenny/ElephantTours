@@ -60,6 +60,25 @@
         </div>
         {%endfor%}
     </div>
+    <div class="base-body-div-content">
+        <form method="POST" class="form" enctype='multipart/form-data'>
+            <input class="like-input" type="text" name="form-name" value="createTour-form"/>
+            <input type="text" class="input-filed-form" name="name" placeholder="Название тура"/>
+            <textarea class="review-text input-filed-form" type="text" name="description"
+                      placeholder="Короткое описание тура"></textarea>
+            <input type="number" class="input-filed-form" name="price" placeholder="Стоимость"/>
+            <textarea class="review-text input-filed-form" type="text" name="longdesc"
+                      placeholder="Длинное описание тура"></textarea>
+            <select name="hotel" class="input-filed-form">
+                {% for hotel in hotelsOption %}
+                <option value="{{hotel[0]}}">{{hotel[1]}}</option>
+                {%endfor%}
+            </select>
+            <input type="file" name="img" class="input-filed-form"/>
+            <button type="submit" class="all-btn header-btn like-button">Создать</button>
+        </form>
+
+    </div>
 </main>
 </body>
 </html>

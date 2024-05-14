@@ -1,3 +1,5 @@
+import os.path
+
 from application.__init__ import app, pg, imgFolder
 import psycopg2.extras
 from flask import Flask, render_template, request, flash, redirect, url_for, session
@@ -312,7 +314,27 @@ def agentPage():
             hotels = cursor.fetchall()
 
             return render_template("userCard.html", code=HTTPStatus.FOUND, user=account, tours=tours, hotels=hotels)
-    return render_template("agentPage.html", code=HTTPStatus.OK)
+
+        if request.form["form-name"] == "createTour-form":
+            cursor.execute(f"SELECT * FROM agencies WHERE users_idusers = {session['id']}")
+            idAgencies = cursor.fetchone()
+            idAgencies = idAgencies[0]
+            cursor.execute(
+                f"INSERT INTO tours (name, description, price, hotels_idhotels, isfire, angencies_idangencies, imgmetatour, logdesc) Values ('{request.form['name']}', '{request.form['description']}', {int(request.form['price'])}, {int(request.form['hotel'])}, {False}, {idAgencies}, '{'1.jpg'}', '{request.form['longdesc']}')"
+            )
+            flash('Uspeh')
+            if not os.path.exists(f'{request.form["name"]}'):
+                curentPath = os.path.dirname(__file__)
+                print(curentPath)
+                uploadFolder = os.path.join(curentPath, f'static\img\Tours\{request.form["name"]}')
+                print(uploadFolder)
+                os.mkdir(uploadFolder)
+            img = request.files['img']
+            filename = '1.jpg'
+            img.save(os.path.join(uploadFolder, filename))
+    cursor.execute("SELECT * FROM hotels")
+    hotelsOption = cursor.fetchall()
+    return render_template("agentPage.html", code=HTTPStatus.OK, hotelsOption=hotelsOption)
 
 # todo: create self tour maker
 
@@ -321,7 +343,5 @@ def agentPage():
 # todo: create tour maker for tour agent
 
 # todo: create places page
-
-# todo: tours img
 
 # todo: add service func
