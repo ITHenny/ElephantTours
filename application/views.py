@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from werkzeug.security import generate_password_hash, check_password_hash
 from application.models import User, Tour, Hotel, Review, TourAgent
 from http import HTTPStatus
+from datetime import date, datetime
 
 
 @app.route("/")
@@ -368,7 +369,7 @@ def editTour(id):
             filename = "1.jpg"
             img.save(os.path.join(newFolder, filename))
         isFire = True
-        if request.form.get('isFire') == None:
+        if request.form.get("isFire") == None:
             isFire = False
         cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(
@@ -376,15 +377,43 @@ def editTour(id):
         )
     basePath = os.path.dirname(__file__)
     currentFolder = os.path.join(basePath, f"static\img\Tours\{tour.tourName}")
-    currentFolder += r'\1.jpg'
-    currentFolder = currentFolder.split(sep= "\\")
+    currentFolder += r"\1.jpg"
+    currentFolder = currentFolder.split(sep="\\")
     currentFolder[0] = currentFolder[0].lower()
-    currentFolder= '/'.join(currentFolder)
+    currentFolder = "/".join(currentFolder)
 
-    return render_template("editTour.html", code=HTTPStatus.OK, tour=tour, hotelsOption=hotelsOption, fileLink=currentFolder)
+    return render_template(
+        "editTour.html",
+        code=HTTPStatus.OK,
+        tour=tour,
+        hotelsOption=hotelsOption,
+        fileLink=currentFolder,
+    )
 
 
-# todo: create self tour maker
+@app.route("/selfTour/<int:id>", methods=["GET", "POST"])
+def selfTour(id):
+    cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    if request.method == "POST":
+        format = "%Y-%m-%d"
+        #print(date(request.form['start_date']))
+        cursor.execute(
+            f"INSERT INTO selftours (selfstartdate, selfenddate, hotels_idhotels, users_idusers) VALUES ('{datetime.strptime(request.form['start_date'], format).date()}', '{datetime.strptime(request.form['end_date'], format).date()}', {request.form['hotel']}, {session['id']})"
+        )
+        pg.commit()
+        return redirect('/')
+    cursor.execute(f"SELECT * FROM hotels WHERE cities_idcities = {id}")
+    hotelsOption = cursor.fetchall()
+    return render_template("selfTour.html", hotelsOption=hotelsOption, username=session['username'])
+
+
+@app.route("/selfTour", methods=["GET", "POST"])
+def chooseCountry():
+    cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute(f"SELECT * FROM cities")
+    cities = cursor.fetchall()
+    return render_template("chooseCountry.html", cities=cities, username=session['username'])
+
 
 # todo: create places page
 

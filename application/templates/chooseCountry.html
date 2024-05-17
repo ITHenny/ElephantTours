@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block maincontent %}
+<div class="container">
+    <section>
+        <h1>Выберите город</h1>
+        <div class="row">
+            {% for city in cities %}
+            <div class="container base-body-div-right country" display="ruby-text">
+                <h1>{{city[2]}}, {{city[1]}}</h1>
+                <h1 align="right"><a class="all-links" align="right" href="/selfTour/{{city[0]}}">Посмотреть отели</a></h1>
+            </div>
+            {%endfor%}
+        </div>
+    </section>
+</div>
+{% endblock maincontent %}
