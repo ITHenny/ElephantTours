@@ -7,15 +7,28 @@ import psycopg2.extras
 from flask import flash
 import re
 from datetime import date, datetime
+import os
 
 
 class User:
     """
     ! Класс пользователя
     """
+
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    def __init__(self, username, password, firstname, secondname, email, passport, date, whoissued, role=8):
+    def __init__(
+        self,
+        username,
+        password,
+        firstname,
+        secondname,
+        email,
+        passport,
+        date,
+        whoissued,
+        role=8,
+    ):
         """
         Метод инициализирует объект класса User
 
@@ -74,8 +87,17 @@ class User:
         cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(
             "INSERT INTO users (username, password, firstname, secondname, email, passport, date, whoissued, roles_idroles) VALUES (%s,%s,%s, %s, %s,%s,%s, %s, %s)",
-            (self.username, self.password, self.firstname, self.secondname, self.email, self.passport, self.date,
-             self.whoissued, self.role),
+            (
+                self.username,
+                self.password,
+                self.firstname,
+                self.secondname,
+                self.email,
+                self.passport,
+                self.date,
+                self.whoissued,
+                self.role,
+            ),
         )
         pg.commit()
         flash("You have successfully registered!")
@@ -87,19 +109,19 @@ class Tour:
     """
 
     def __init__(
-            self,
-            id,
-            tourName,
-            description,
-            imgMeta,
-            price,
-            hotelName,
-            street,
-            house,
-            city,
-            country,
-            stars,
-            longdesc,
+        self,
+        id,
+        tourName,
+        description,
+        imgMeta,
+        price,
+        hotelName,
+        street,
+        house,
+        city,
+        country,
+        stars,
+        longdesc,
     ):
         """
         Метод инициализирует объект класса Tour
@@ -197,7 +219,7 @@ class Tour:
             city=sql[18],
             country=sql[19],
             stars=sql[15],
-            longdesc=sql[8]
+            longdesc=sql[8],
         )
         return tour
 
@@ -284,18 +306,16 @@ class Hotel:
         """
         if len(sql) > 1:
             str_sql = (
-                    "SELECT * FROM hotels JOIN cities ON (hotels.cities_idcities = cities.idcities) WHERE "
-                    + "AND".join(sql)
+                "SELECT * FROM hotels JOIN cities ON (hotels.cities_idcities = cities.idcities) WHERE "
+                + "AND".join(sql)
             )
         elif len(sql) == 1:
             str_sql = (
-                    "SELECT * FROM hotels JOIN cities ON (hotels.cities_idcities = cities.idcities) WHERE "
-                    + sql[0]
+                "SELECT * FROM hotels JOIN cities ON (hotels.cities_idcities = cities.idcities) WHERE "
+                + sql[0]
             )
         else:
-            str_sql = (
-                "SELECT * FROM hotels JOIN cities ON (hotels.cities_idcities = cities.idcities)"
-            )
+            str_sql = "SELECT * FROM hotels JOIN cities ON (hotels.cities_idcities = cities.idcities)"
         cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(str_sql)
         hotels = cursor.fetchall()
@@ -347,10 +367,53 @@ class Review:
 
     def createReview(self):
         cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute("INSERT INTO reviews (reviw, users_idusers) VALUES (%s, %s)", (self.text, self.userid))
-        cursor.execute(f"SELECT idreview FROM reviews WHERE users_idusers = {self.userid}")
+        cursor.execute(
+            "INSERT INTO reviews (reviw, users_idusers) VALUES (%s, %s)",
+            (self.text, self.userid),
+        )
+        cursor.execute(
+            f"SELECT idreview FROM reviews WHERE users_idusers = {self.userid}"
+        )
         reviewid = cursor.fetchall()
         reviewid = reviewid[-1]
-        cursor.execute(f"INSERT INTO tours_has_reviews (tours_idtours, reviews_idreview) VALUES ({self.tourid}, {reviewid[0]})")
+        cursor.execute(
+            f"INSERT INTO tours_has_reviews (tours_idtours, reviews_idreview) VALUES ({self.tourid}, {reviewid[0]})"
+        )
         pg.commit()
 
+
+class TourAgent:
+    @staticmethod
+    def getUserCard(account):
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute(
+            "select * from tours JOIN tours_has_users ON tours.idtours = tours_has_users.tours_idtours WHERE users_idusers=%s;",
+            (account[0],),
+        )
+        tours = cursor.fetchall()
+        cursor.execute(
+            "select * from hotels JOIN hotels_has_users ON hotels.idhotels = hotels_has_users.hotels_idhotels WHERE users_idusers=%s;",
+            (account[0],),
+        )
+        hotels = cursor.fetchall()
+        return [tours, hotels]
+
+    @staticmethod
+    def createTour(request, session):
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute(f"SELECT * FROM agencies WHERE users_idusers = {session['id']}")
+        idAgencies = cursor.fetchone()
+        idAgencies = idAgencies[0]
+        if not os.path.exists(f'{request.form["name"]}'):
+            curentPath = os.path.dirname(__file__)
+            uploadFolder = os.path.join(
+                curentPath, f'static\img\Tours\{request.form["name"]}'
+            )
+            os.mkdir(uploadFolder)
+        img = request.files["img"]
+        filename = "1.jpg"
+        img.save(os.path.join(uploadFolder, filename))
+        cursor.execute(
+            f"INSERT INTO tours (name, description, price, hotels_idhotels, isfire, angencies_idangencies, imgmetatour, logdesc) Values ('{request.form['name']}', '{request.form['description']}', {int(request.form['price'])}, {int(request.form['hotel'])}, {False}, {idAgencies}, '{'1.jpg'}', '{request.form['longdesc']}')"
+        )
+        flash("Uspeh")

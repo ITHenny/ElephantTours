@@ -4,7 +4,7 @@ from application.__init__ import app, pg, imgFolder
 import psycopg2.extras
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from application.models import User, Tour, Hotel, Review
+from application.models import User, Tour, Hotel, Review, TourAgent
 from http import HTTPStatus
 
 
@@ -29,9 +29,9 @@ def login():
     """
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if (
-            request.method == "POST"
-            and "username" in request.form
-            and "password" in request.form
+        request.method == "POST"
+        and "username" in request.form
+        and "password" in request.form
     ):
         username = request.form["username"]
         password = request.form["password"]
@@ -70,15 +70,15 @@ def register():
     # todo: переделать регистрацию
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if (
-            request.method == "POST"
-            and "username" in request.form
-            and "password" in request.form
-            and "email" in request.form
-            and "name" in request.form
-            and "secondName" in request.form
-            and "passport" in request.form
-            and "kem" in request.form
-            and "date" in request.form
+        request.method == "POST"
+        and "username" in request.form
+        and "password" in request.form
+        and "email" in request.form
+        and "name" in request.form
+        and "secondName" in request.form
+        and "passport" in request.form
+        and "kem" in request.form
+        and "date" in request.form
     ):
         username = request.form["username"]
         email = request.form["email"]
@@ -93,7 +93,9 @@ def register():
         if not User.isValid(username, email, password, passport, date):
             flash("Invalid Data")
 
-        user = User(username, _hashed_password, name, secondName, email, passport, date, kem)
+        user = User(
+            username, _hashed_password, name, secondName, email, passport, date, kem
+        )
         user.insertUser()
 
         return redirect("/", code=HTTPStatus.FOUND)
@@ -160,7 +162,6 @@ def tours():
     """
     # Обрабоика отправленной формы фильтров
     if request.method == "POST":
-
         if request.form["form-name"] == "like-form":
             if not "loggedin" in session:
                 return redirect("/login", code=HTTPStatus.FOUND)
@@ -198,7 +199,6 @@ def hotels():
     :return: HTML страница
     """
     if request.method == "POST":
-
         if request.form["form-name"] == "like-form":
             if not "loggedin" in session:
                 return redirect("/login", code=HTTPStatus.FOUND)
@@ -238,15 +238,18 @@ def tourPage(id):
 
     if request.method == "POST":
         if request.form["form-name"] == "review-form":
-            review = Review(session['id'], request.form["review"], id)
+            review = Review(session["id"], request.form["review"], id)
             review.createReview()
 
     tour = Tour.getTourByID(id)
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(
-        f"SELECT users.username, reviews.reviw FROM reviews JOIN tours_has_reviews ON (reviews.idreview = tours_has_reviews.reviews_idreview) JOIN users ON (reviews.users_idusers = users.idusers) WHERE tours_idtours = {id}")
+        f"SELECT users.username, reviews.reviw FROM reviews JOIN tours_has_reviews ON (reviews.idreview = tours_has_reviews.reviews_idreview) JOIN users ON (reviews.users_idusers = users.idusers) WHERE tours_idtours = {id}"
+    )
     reviews = cursor.fetchall()
-    return render_template("tourpage.html", tour=tour, username=session["username"], reviews=reviews)
+    return render_template(
+        "tourpage.html", tour=tour, username=session["username"], reviews=reviews
+    )
 
 
 @app.route("/agentLogin", methods=["GET", "POST"])
@@ -257,9 +260,9 @@ def agentLogin():
     """
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if (
-            request.method == "POST"
-            and "username" in request.form
-            and "password" in request.form
+        request.method == "POST"
+        and "username" in request.form
+        and "password" in request.form
     ):
         username = request.form["username"]
         password = request.form["password"]
@@ -297,50 +300,91 @@ def agentPage():
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if request.method == "POST":
         if request.form["form-name"] == "getUser-form":
-            cursor.execute("SELECT * FROM users WHERE username = %s", (request.form["userName"],))
+            cursor.execute(
+                "SELECT * FROM users WHERE username = %s", (request.form["userName"],)
+            )
             # Fetch one record and return result
             account = cursor.fetchone()
             if not account:
-                render_template("agentPage.html", code=HTTPStatus.OK)
-            cursor.execute(
-                "select * from tours JOIN tours_has_users ON tours.idtours = tours_has_users.tours_idtours WHERE users_idusers=%s;",
-                (account[0],),
-            )
-            tours = cursor.fetchall()
-            cursor.execute(
-                "select * from hotels JOIN hotels_has_users ON hotels.idhotels = hotels_has_users.hotels_idhotels WHERE users_idusers=%s;",
-                (account[0],),
-            )
-            hotels = cursor.fetchall()
+                return render_template("agentPage.html", code=HTTPStatus.OK)
+            userCard = TourAgent.getUserCard(account)
 
-            return render_template("userCard.html", code=HTTPStatus.FOUND, user=account, tours=tours, hotels=hotels)
+            return render_template(
+                "userCard.html",
+                code=HTTPStatus.FOUND,
+                user=account,
+                tours=userCard[0],
+                hotels=userCard[1],
+            )
 
         if request.form["form-name"] == "createTour-form":
-            cursor.execute(f"SELECT * FROM agencies WHERE users_idusers = {session['id']}")
-            idAgencies = cursor.fetchone()
-            idAgencies = idAgencies[0]
-            cursor.execute(
-                f"INSERT INTO tours (name, description, price, hotels_idhotels, isfire, angencies_idangencies, imgmetatour, logdesc) Values ('{request.form['name']}', '{request.form['description']}', {int(request.form['price'])}, {int(request.form['hotel'])}, {False}, {idAgencies}, '{'1.jpg'}', '{request.form['longdesc']}')"
-            )
-            flash('Uspeh')
-            if not os.path.exists(f'{request.form["name"]}'):
-                curentPath = os.path.dirname(__file__)
-                print(curentPath)
-                uploadFolder = os.path.join(curentPath, f'static\img\Tours\{request.form["name"]}')
-                print(uploadFolder)
-                os.mkdir(uploadFolder)
-            img = request.files['img']
-            filename = '1.jpg'
-            img.save(os.path.join(uploadFolder, filename))
+            TourAgent.createTour(request, session)
+
     cursor.execute("SELECT * FROM hotels")
     hotelsOption = cursor.fetchall()
-    return render_template("agentPage.html", code=HTTPStatus.OK, hotelsOption=hotelsOption)
+
+    cursor.execute("SELECT * FROM tours")
+    tours = cursor.fetchall()
+    return render_template(
+        "agentPage.html", code=HTTPStatus.OK, hotelsOption=hotelsOption, tours=tours
+    )
+
+
+@app.route("/editTour/<int:id>", methods=["GET", "POST"])
+def editTour(id):
+    tour = Tour.getTourByID(id)
+    cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute("SELECT * FROM hotels")
+    hotelsOption = cursor.fetchall()
+    if request.method == "POST":
+        if (
+            tour.tourName != request.form["name"]
+            and request.form["img"].filename != "1.jpg"
+        ):
+            basePath = os.path.dirname(__file__)
+            currentFolder = os.path.join(basePath, f"static\img\Tours\{tour.tourName}")
+            newFolder = os.path.join(
+                basePath, f'static\img\Tours\{request.form["name"]}'
+            )
+            os.rename(currentFolder, newFolder)
+            os.remove(newFolder + r"\1.jpg")
+            img = request.files["img"]
+            filename = "1.jpg"
+            img.save(os.path.join(newFolder, filename))
+        elif tour.tourName != request.form["name"]:
+            basePath = os.path.dirname(__file__)
+            currentFolder = os.path.join(basePath, f"static\img\Tours\{tour.tourName}")
+            newFolder = os.path.join(
+                basePath, f'static\img\Tours\{request.form["name"]}'
+            )
+            os.rename(currentFolder, newFolder)
+        else:
+            basePath = os.path.dirname(__file__)
+            newFolder = os.path.join(
+                basePath, f'static\img\Tours\{request.form["name"]}'
+            )
+            os.remove(newFolder + r"\1.jpg")
+            img = request.files["img"]
+            filename = "1.jpg"
+            img.save(os.path.join(newFolder, filename))
+        isFire = True
+        if request.form.get('isFire') == None:
+            isFire = False
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute(
+            f"UPDATE tours SET name = '{request.form['name']}', description = '{request.form['description']}', price = {request.form['price']}, hotels_idhotels = {request.form['hotel']}, isfire = {isFire}, logdesc = '{request.form['longdesc']}' WHERE idtours = {tour.id}"
+        )
+    basePath = os.path.dirname(__file__)
+    currentFolder = os.path.join(basePath, f"static\img\Tours\{tour.tourName}")
+    currentFolder += r'\1.jpg'
+    currentFolder = currentFolder.split(sep= "\\")
+    currentFolder[0] = currentFolder[0].lower()
+    currentFolder= '/'.join(currentFolder)
+
+    return render_template("editTour.html", code=HTTPStatus.OK, tour=tour, hotelsOption=hotelsOption, fileLink=currentFolder)
+
 
 # todo: create self tour maker
-
-# todo: create tour edit form for tour agent
-
-# todo: create tour maker for tour agent
 
 # todo: create places page
 

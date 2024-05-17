@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/normalize.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <title>Edit tour {{tour.tourName}}</title>
+</head>
+<body class="container">
+<header class="header container">
+    <div class="header-top">
+        <a class="all-links header-top-link header-top-link-one" href="/"><img class="img-header"
+                                                                               src="../static/img/logo.png"
+                                                                               alt="Lagoona"></a>
+        <a class="all-links header-top-link header-top-link-two" href="tel:+74953225448">+7 495 322 54 48</a>
+        <a class="all-links header-top-link header-top-link-three" href="/logout">Logout</a>
+    </div>
+</header>
+<div class="base-body-div-content">
+    <form method="POST" class="form" enctype='multipart/form-data'>
+        <input class="like-input" type="text" name="form-name" value="createTour-form"/>
+        <input type="text" class="input-filed-form" name="name" value="{{tour.tourName}}"/>
+        <textarea class="review-text input-filed-form" type="text" name="description">{{tour.description}}</textarea>
+        <input type="number" class="input-filed-form" name="price" value="{{tour.price}}"/>
+        <textarea class="review-text input-filed-form" type="text" name="longdesc">{{tour.longdesc}}</textarea>
+        <select name="hotel" class="input-filed-form">
+            {% for hotel in hotelsOption %}
+            <option value="{{hotel[0]}}">{{hotel[1]}}</option>
+            {%endfor%}
+        </select>
+        <input type="file" name="img" class="input-filed-form" value="{{fileLink}}"/>
+        <input type="checkbox" name="isFire" id="fire" value="True"/>
+        <label for="fire">Горящий тур</label>
+        <button type="submit" class="all-btn header-btn like-button">Отредактировать</button>
+    </form>
+
+</div>
+</body>
+</html>
