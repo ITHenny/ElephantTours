@@ -414,7 +414,18 @@ def chooseCountry():
     cities = cursor.fetchall()
     return render_template("chooseCountry.html", cities=cities, username=session['username'])
 
-
+@app.route("/places", methods=["GET", "POST"])
+def places():
+    cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute("SELECT * FROM cities")
+    cities = cursor.fetchall()
+    if request.method == "POST":
+        cursor.execute(f"SELECT * FROM places JOIN cities ON places.cities_idcities = cities.idcities WHERE cities.idcities={request.form['city']}")
+        places =cursor.fetchall()
+        return render_template("places.html", places=places, cities=cities)
+    cursor.execute("SELECT * FROM places JOIN cities ON places.cities_idcities = cities.idcities")
+    places = cursor.fetchall()
+    return render_template("places.html", places=places, cities=cities)
 # todo: create places page
 
 # todo: add service func

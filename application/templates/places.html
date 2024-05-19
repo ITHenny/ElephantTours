@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block maincontent %}
+
+<main class="main container">
+    <div class="base-body-div">
+
+        <div class="container base-body-div-left">
+            <h3>Выберите город</h3>
+            <form class="form" method="post">
+                <select name="city" class="input-filed-form">
+                    {% for city in cities %}
+                    <option value="{{city[0]}}">{{city[1]}}</option>
+                    {%endfor%}
+                </select>
+                <button type="submit" class="submit-btn all-btn header-btn" value="Register" name="">Найти</button>
+            </form>
+        </div>
+        <div class="container places">
+            {%for place in places%}
+            <div class="container base-body-div-right places">
+                <div>
+                    <img class="img-header img-tour" src="./static/img/Places/{{place[1]}}/1.jpg"
+                         alt="{{place[1]}}">
+                </div>
+                <div>
+                    <h2>{{place[1]}}</h2>
+                    <span>{{place[5]}}, {{place[6]}}</span>
+                </div>
+            </div>
+            {%endfor%}
+        </div>
+
+    </div>
+</main>
+
+{% endblock maincontent %}

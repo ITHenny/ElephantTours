@@ -857,6 +857,11 @@ html {
 .country{
     display: ruby-text
 }
+
+.places{
+    display: block;
+    width: 80%;
+}
 /* Footer */
 
 .all-footer {
