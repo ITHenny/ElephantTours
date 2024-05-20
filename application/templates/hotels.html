@@ -44,7 +44,7 @@
             {% for hotel in hotels %}
             <div class="container base-body-div-right">
                 <div class="container base-body-div-right-img">
-                    <img class="img-header" src="./static/img/logo.png"alt="Lagoona">
+                    <img class="img-header" src="./static/img/Hotels/{{hotel[1]}}/1.jpg"alt="Lagoona">
                 </div>
 
                 <div class="container base-body-div-right-text">
@@ -52,7 +52,7 @@
                         <h2>{{hotel[1]}}</h2>
                         <p>Расположение: {{hotel[10]}}, {{hotel[9]}}, {{hotel[3]}}, {{hotel[4]}}</p>
                         <h4>Цена: {{hotel[2]}}</h4>
-                        <button class="all-btn header-btn"><a class="all-links header-top-link header-top-link-three" href="/tours/{{hotel[0]}}">Подробнее</a></button>
+                        <button class="all-btn header-btn"><a class="all-links header-top-link header-top-link-three" href="/hotel/{{hotel[0]}}">Подробнее</a></button>
                         <form method="POST" class="like-form">
                             <input class="like-input" type="text" name="form-name" value="like-form" />
                             <input class="like-input" type="text" name="like-form" value={{hotel[0]}} />

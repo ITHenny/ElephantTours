@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/normalize.css">
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="../static/css/normalize.css">
+    <link rel="stylesheet" href="../static/css/style.css">
     <title>Tour</title>
 </head>
 <body class="page">
@@ -24,26 +24,35 @@
 
 <main class="main container">
     <div class="container">
-        <h1>Составьте свой тур</h1>
-        <form class="form" method="post">
-            <select name="hotel" class="input-filed-form">
-                {% for hotel in hotelsOption %}
-                <option value="{{hotel[0]}}">{{hotel[1]}}</option>
-                {%endfor%}
-            </select>
-            <label for="start_date">Tour Start Date:</label>
-            <input class="input-filed-form-text" type="date" name="start_date" id="start_date" required>
-            <label for="end_date">Tour End Date:</label>
-            <input class="input-filed-form-text " type="date" name="end_date" id="end_date" required>
-            <h2>Дополнительные услуги</h2>
-            {% for service in services %}
-            <div display="inline-block">
-                <input type="checkbox" name="{{service[1]}}" id="{{service[1]}}" value="{{service[0]}}"><label for="{{service[1]}}">
-                {{service[1]}}, {{service[2]}}</label>
+        <h1>{{ hotel[1] }}</h1>
+        <img src="../static/img/Hotels/{{hotel[1]}}/1.jpg" alt="{{ hotel[1] }}" width="100%"
+             class="img-tour-page">
+        <h2>Hotel Details:</h2>
+        <p class="hotel-address"><strong>Address:</strong> {{ hotel[3] }}, {{ hotel[4] }}</p>
+        <p><strong>Stars:</strong> {{ hotel[6] }}</p>
+        <p><strong>Price:</strong> {{ hotel[2] }}</p>
+
+        <div class="review-block">
+            <h3>Оставьте отзыв</h3>
+            <form class="form review-form" method="post">
+                <input class="like-input" type="text" name="form-name" value="review-form">
+                <textarea class="review-text" type="text" name="review" placeholder="Напишите отзыв"></textarea>
+                <button class="submit-btn all-btn header-btn" type="submit">Отправить</button>
+            </form>
+        </div>
+
+        <div>
+            <h3>Отзывы</h3>
+            {% for review in reviews %}
+            <div class="review-user">
+                <h3>Пользователь: </h3>
+                <p>{{review[0]}}</p>
+                <h3>Отзыв:</h3>
+                <p>{{review[1]}}</p>
             </div>
-            {% endfor %}
-            <button class="submit-btn all-btn header-btn" type="submit">Order Now</button>
-        </form>
+
+            {%endfor%}
+        </div>
 
     </div>
 

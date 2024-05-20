@@ -30,9 +30,9 @@ def login():
     """
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if (
-        request.method == "POST"
-        and "username" in request.form
-        and "password" in request.form
+            request.method == "POST"
+            and "username" in request.form
+            and "password" in request.form
     ):
         username = request.form["username"]
         password = request.form["password"]
@@ -71,15 +71,15 @@ def register():
     # todo: переделать регистрацию
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if (
-        request.method == "POST"
-        and "username" in request.form
-        and "password" in request.form
-        and "email" in request.form
-        and "name" in request.form
-        and "secondName" in request.form
-        and "passport" in request.form
-        and "kem" in request.form
-        and "date" in request.form
+            request.method == "POST"
+            and "username" in request.form
+            and "password" in request.form
+            and "email" in request.form
+            and "name" in request.form
+            and "secondName" in request.form
+            and "passport" in request.form
+            and "kem" in request.form
+            and "date" in request.form
     ):
         username = request.form["username"]
         email = request.form["email"]
@@ -136,10 +136,30 @@ def profile(username):
         Hotel.deleteLoveHotel(request.form["like-form"], session["id"])
         return redirect(f"/profile/{session['username']}", code=HTTPStatus.FOUND)
 
+    if request.method == "POST" and request.form["form-name"] == "reject-form":
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute(f"DELETE FROM services_has_bookings WHERE bookings_idbookings = {request.form['idbooking']}")
+        cursor.execute(f"DELETE FROM bookings WHERE idbookings = {request.form['idbooking']}")
+        pg.commit()
+        return redirect(f"/profile/{session['username']}", code=HTTPStatus.FOUND)
+
+    if request.method == "POST" and request.form["form-name"] == "selfReject-form":
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute(f"DELETE FROM services_has_selftours WHERE selftours_idselftours = {request.form['idself']}")
+        cursor.execute(f"DELETE FROM selftours WHERE idselftours = {request.form['idself']}")
+        pg.commit()
+        return redirect(f"/profile/{session['username']}", code=HTTPStatus.FOUND)
+
+    if request.method == "POST" and request.form["form-name"] == "intpass-form":
+        cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute(f"INSERT INTO intpassport (intnumber, intdate, intwhoissued, users_idusers) VALUES ({request.form['intnumber']}, '{request.form['date']}', '{request.form['kem']}', {session['id']})")
+        pg.commit()
+        return redirect(f"/profile/{session['username']}", code=HTTPStatus.FOUND)
+
     # username = request.args.get("username", None)
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute("SELECT email FROM users WHERE username = %s", (username,))
-    email = cursor.fetchone()
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    user = cursor.fetchone()
     cursor.execute(
         "select * from tours JOIN tours_has_users ON tours.idtours = tours_has_users.tours_idtours WHERE users_idusers=%s;",
         (session["id"],),
@@ -150,8 +170,35 @@ def profile(username):
         (session["id"],),
     )
     hotels = cursor.fetchall()
+    cursor.execute(
+        f"SELECT * FROM bookings JOIN tours ON bookings.tours_idtours = tours.idtours WHERE users_idusers = {session['id']}"
+    )
+    bookings = cursor.fetchall()
+    cursor.execute(
+        "SELECT * FROM services_has_bookings JOIN services ON services.idservices = services_has_bookings.services_idservices"
+    )
+    services = cursor.fetchall()
+    cursor.execute(
+        f"SELECT * FROM selftours JOIN hotels ON selftours.hotels_idhotels = hotels.idhotels WHERE users_idusers = {session['id']}"
+    )
+    selfTours = cursor.fetchall()
+    cursor.execute(
+        "SELECT * FROM services_has_bookings JOIN services ON services.idservices = services_has_bookings.services_idservices"
+    )
+    servicesSelf = cursor.fetchall()
+    cursor.execute(f"SELECT * FROM intpassport WHERE users_idusers = {session['id']}")
+    intpassport = cursor.fetchone()
     return render_template(
-        "Profile.html", username=username, email=email[0], tours=tours, hotels=hotels
+        "Profile.html",
+        username=username,
+        user=user,
+        tours=tours,
+        hotels=hotels,
+        bookings=bookings,
+        services=services,
+        selfTours=selfTours,
+        servicesSelf=servicesSelf,
+        intpassport=intpassport
     )
 
 
@@ -279,6 +326,34 @@ def tourPage(id):
         services=services,
     )
 
+@app.route("/hotel/<int:id>", methods=["GET", "POST"])
+def hotelPage(id):
+    if request.method == "POST":
+        if request.form["form-name"] == "review-form":
+            review = Review(session["id"], request.form["review"], id)
+            cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cursor.execute(
+                "INSERT INTO reviews (reviw, users_idusers) VALUES (%s, %s)",
+                (review.text, review.userid),
+            )
+            cursor.execute(
+                f"SELECT idreview FROM reviews WHERE users_idusers = {review.userid}"
+            )
+            reviewid = cursor.fetchall()
+            reviewid = reviewid[-1]
+            cursor.execute(
+                f"INSERT INTO hotels_has_reviews (hotels_idhotels, reviews_idreview) VALUES ({review.tourid}, {reviewid[0]})"
+            )
+            pg.commit()
+            return redirect(f"/hotel/{id}")
+    cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute(f"SELECT * from hotels WHERE idhotels = {id}")
+    hotel = cursor.fetchone()
+    cursor.execute(
+        f"SELECT users.username, reviews.reviw FROM reviews JOIN hotels_has_reviews ON (reviews.idreview = hotels_has_reviews.reviews_idreview) JOIN users ON (reviews.users_idusers = users.idusers) WHERE hotels_idhotels = {id}"
+    )
+    reviews = cursor.fetchall()
+    return render_template("hotelPage.html", hotel=hotel, reviews=reviews)
 
 @app.route("/agentLogin", methods=["GET", "POST"])
 def agentLogin():
@@ -288,9 +363,9 @@ def agentLogin():
     """
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if (
-        request.method == "POST"
-        and "username" in request.form
-        and "password" in request.form
+            request.method == "POST"
+            and "username" in request.form
+            and "password" in request.form
     ):
         username = request.form["username"]
         password = request.form["password"]
@@ -366,8 +441,8 @@ def editTour(id):
     hotelsOption = cursor.fetchall()
     if request.method == "POST":
         if (
-            tour.tourName != request.form["name"]
-            and request.form["img"].filename != "1.jpg"
+                tour.tourName != request.form["name"]
+                and request.form["img"].filename != "1.jpg"
         ):
             basePath = os.path.dirname(__file__)
             currentFolder = os.path.join(basePath, f"static\img\Tours\{tour.tourName}")
@@ -427,12 +502,27 @@ def selfTour(id):
         cursor.execute(
             f"INSERT INTO selftours (selfstartdate, selfenddate, hotels_idhotels, users_idusers) VALUES ('{datetime.strptime(request.form['start_date'], format).date()}', '{datetime.strptime(request.form['end_date'], format).date()}', {request.form['hotel']}, {session['id']})"
         )
+        cursor.execute("SELECT max(idselftours) FROM selftours")
+        maxid = cursor.fetchone()
+        list_services = [
+            "Такси от аэропорта до отеля",
+            "Экскурсии по местным достопремечательностям",
+            "Трехразовое питание",
+            "Местная симкарта",
+        ]
+        for i in list_services:
+            if request.form.get(i, False):
+                cursor.execute(
+                    f"INSERT INTO services_has_selftours (services_idservices, selftours_idselftours) VALUES ({int(request.form[i])}, {maxid[0]})"
+                )
         pg.commit()
         return redirect("/")
     cursor.execute(f"SELECT * FROM hotels WHERE cities_idcities = {id}")
     hotelsOption = cursor.fetchall()
+    cursor.execute("SELECT * FROM services")
+    services = cursor.fetchall()
     return render_template(
-        "selfTour.html", hotelsOption=hotelsOption, username=session["username"]
+        "selfTour.html", hotelsOption=hotelsOption, username=session["username"], services=services
     )
 
 
