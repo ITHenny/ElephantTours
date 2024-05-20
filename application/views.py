@@ -237,19 +237,46 @@ def tourPage(id):
     :return: HTML страница
     """
 
+    cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if request.method == "POST":
         if request.form["form-name"] == "review-form":
             review = Review(session["id"], request.form["review"], id)
             review.createReview()
+        if request.form["form-name"] == "booking-form":
+            format = "%Y-%m-%d"
+            cursor.execute(
+                f"INSERT INTO bookings (datestart, dateend, tours_idtours, users_idusers, ispaid) VALUES ('{datetime.strptime(request.form['start_date'], format).date()}', '{datetime.strptime(request.form['end_date'], format).date()}', {id}, {session['id']}, {False})"
+            )
+            cursor.execute("SELECT max(idbookings) FROM bookings")
+            maxid = cursor.fetchone()
+            list_services = [
+                "Такси от аэропорта до отеля",
+                "Экскурсии по местным достопремечательностям",
+                "Трехразовое питание",
+                "Местная симкарта",
+            ]
+            for i in list_services:
+                if request.form.get(i, False):
+                    cursor.execute(
+                        f"INSERT INTO services_has_bookings (services_idservices, bookings_idbookings) VALUES ({int(request.form[i])}, {maxid[0]})"
+                    )
+            pg.commit()
+            return redirect("/")
 
     tour = Tour.getTourByID(id)
-    cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
     cursor.execute(
         f"SELECT users.username, reviews.reviw FROM reviews JOIN tours_has_reviews ON (reviews.idreview = tours_has_reviews.reviews_idreview) JOIN users ON (reviews.users_idusers = users.idusers) WHERE tours_idtours = {id}"
     )
     reviews = cursor.fetchall()
+    cursor.execute("SELECT * FROM services")
+    services = cursor.fetchall()
     return render_template(
-        "tourpage.html", tour=tour, username=session["username"], reviews=reviews
+        "tourpage.html",
+        tour=tour,
+        username=session["username"],
+        reviews=reviews,
+        services=services,
     )
 
 
@@ -396,15 +423,17 @@ def selfTour(id):
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if request.method == "POST":
         format = "%Y-%m-%d"
-        #print(date(request.form['start_date']))
+        # print(date(request.form['start_date']))
         cursor.execute(
             f"INSERT INTO selftours (selfstartdate, selfenddate, hotels_idhotels, users_idusers) VALUES ('{datetime.strptime(request.form['start_date'], format).date()}', '{datetime.strptime(request.form['end_date'], format).date()}', {request.form['hotel']}, {session['id']})"
         )
         pg.commit()
-        return redirect('/')
+        return redirect("/")
     cursor.execute(f"SELECT * FROM hotels WHERE cities_idcities = {id}")
     hotelsOption = cursor.fetchall()
-    return render_template("selfTour.html", hotelsOption=hotelsOption, username=session['username'])
+    return render_template(
+        "selfTour.html", hotelsOption=hotelsOption, username=session["username"]
+    )
 
 
 @app.route("/selfTour", methods=["GET", "POST"])
@@ -412,7 +441,10 @@ def chooseCountry():
     cursor = pg.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(f"SELECT * FROM cities")
     cities = cursor.fetchall()
-    return render_template("chooseCountry.html", cities=cities, username=session['username'])
+    return render_template(
+        "chooseCountry.html", cities=cities, username=session["username"]
+    )
+
 
 @app.route("/places", methods=["GET", "POST"])
 def places():
@@ -420,12 +452,13 @@ def places():
     cursor.execute("SELECT * FROM cities")
     cities = cursor.fetchall()
     if request.method == "POST":
-        cursor.execute(f"SELECT * FROM places JOIN cities ON places.cities_idcities = cities.idcities WHERE cities.idcities={request.form['city']}")
-        places =cursor.fetchall()
+        cursor.execute(
+            f"SELECT * FROM places JOIN cities ON places.cities_idcities = cities.idcities WHERE cities.idcities={request.form['city']}"
+        )
+        places = cursor.fetchall()
         return render_template("places.html", places=places, cities=cities)
-    cursor.execute("SELECT * FROM places JOIN cities ON places.cities_idcities = cities.idcities")
+    cursor.execute(
+        "SELECT * FROM places JOIN cities ON places.cities_idcities = cities.idcities"
+    )
     places = cursor.fetchall()
     return render_template("places.html", places=places, cities=cities)
-# todo: create places page
-
-# todo: add service func
